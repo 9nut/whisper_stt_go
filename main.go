@@ -19,13 +19,14 @@ import (
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, os.Interrupt, syscall.SIGTERM)
 
 	vthreshold := flag.Float64("v", 0.25, "Voice Activity Detection Energy Threshold (%% of energy)")
 	fthreshold := flag.Float64("f", 100.0, "Cutoff Frequency for High Pass Filter")
-	devid := flag.Int("d", 0, "Microphone Device ID")
+	devid := flag.Int("d", -1, "Microphone Device ID")
 	rate := flag.Int("r", 16000, "Sample Rate")
 	modelpath := flag.String("m", "../whisper.cpp/models/ggml-base.en.bin", "Path to Model File")
 
@@ -40,6 +41,7 @@ func main() {
 
 	go func() {
 		runtime.LockOSThread()
+		defer runtime.UnlockOSThread()
 
 		model, err := whisper.New(*modelpath)
 		if err != nil {
@@ -53,7 +55,7 @@ func main() {
 
 		log.Println("Model Language: ", context.Language())
 		context.SetThreads(5)
-		context.SetAudioCtx(500)
+		context.SetAudioCtx(1500)
 
 		samples := []float32{}
 		limit := int(aad.Rate) * 10 // max samples before processing
