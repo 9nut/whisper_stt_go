@@ -1,7 +1,8 @@
 package main
 
 // #cgo CFLAGS: -I../whisper.cpp/include -I../whisper.cpp/ggml/include
-// #cgo LDFLAGS: -L../whisper.cpp
+// #cgo linux LDFLAGS: -L../whisper.cpp
+// #cgo darwin LDFLAGS: -framework Accelerate -framework Metal -framework Foundation -framework CoreGraphics
 import (
 	"flag"
 	"fmt"

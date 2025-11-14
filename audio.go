@@ -64,7 +64,7 @@ func NewAsyncAudio(capid int, rate int, mslen int32) *AsyncAudio {
 	}
 	this.Dev = dev
 
-	log.Println("Got device spec: %v", have)
+	log.Printf("Using device %s frequency %d\n", sdl.GetAudioDeviceName(capid, true), have.Freq)
 	this.Rate = have.Freq
 	this.LenInMS = mslen
 	this.AudioBuf.Buf = make([]float32, have.Freq*mslen/1000)
